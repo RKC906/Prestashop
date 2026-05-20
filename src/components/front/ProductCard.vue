@@ -3,6 +3,9 @@
     <h3>{{ getLocalizedValue(product.name) }}</h3>
     <p class="price">{{ parseFloat(product.price).toFixed(2) }} €</p>
     <p class="reference">Réf : {{ product.reference }}</p>
+    <router-link :to="{ name: 'ProductDetailView', params: { id: product.id } }">
+      <button>Voir les détails</button>
+    </router-link>
   </div>
 </template>
 

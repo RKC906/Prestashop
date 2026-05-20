@@ -1,5 +1,5 @@
 <script setup>
-    import ProductView from '@/views/front/ProductView.vue';
+    import ProductView from '@/views/front/products/ProductView.vue';
 </script>
 
 <template>
