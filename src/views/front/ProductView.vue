@@ -20,7 +20,7 @@
 <script setup>
 import { onMounted } from 'vue'
 import { useProducts } from '@/composables/useProducts'
-import ProductCard from '@/components/ProductCard.vue'
+import ProductCard from '@/components/front/ProductCard.vue'
 
 const { products, isLoading, error, fetchProducts } = useProducts()
 

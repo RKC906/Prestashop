@@ -1,19 +1,20 @@
-// Définition des routes
+import { createRouter, createWebHistory } from 'vue-router'
+import ProductsView from '@/views/front/ProductView.vue'
+
 const routes = [
   {
-    path: '/',
-    name: 'Home',
-    component: Home
+    path: '/products',
+    name: 'Products',
+    component: ProductsView
   },
   {
-    path: '/about',
-    name: 'About',
-    component: About
+    path: '/',
+    redirect: '/products' // Redirige l'accueil vers les produits par défaut
   }
 ]
 
 const router = createRouter({
-  history: createWebHistory(), // Utilise l'historique HTML5 classique (sans le # dans l'URL)
+  history: createWebHistory(),
   routes
 })
 
