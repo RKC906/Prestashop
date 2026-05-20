@@ -1,15 +1,21 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ProductsView from '@/views/front/ProductView.vue'
+import Home from '@/views/front/Home.vue'
 
 const routes = [
+  {
+    path: '/',
+    redirect: '/home' // Redirige l'accueil vers les produits par défaut
+  },
   {
     path: '/products',
     name: 'Products',
     component: ProductsView
   },
   {
-    path: '/',
-    redirect: '/products' // Redirige l'accueil vers les produits par défaut
+    path: '/home',
+    name: 'Home',
+    component: Home
   }
 ]
 

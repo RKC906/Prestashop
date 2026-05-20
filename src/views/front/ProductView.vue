@@ -1,7 +1,5 @@
 <template>
   <div class="products-container">
-    <h1>Boutique PrestaShop</h1>
-
     <!-- États de chargement et d'erreur -->
     <div v-if="isLoading" class="loading">Chargement des produits...</div>
     <div v-else-if="error" class="error-message">{{ error }}</div>
@@ -19,7 +17,7 @@
 
 <script setup>
 import { onMounted } from 'vue'
-import { useProducts } from '@/composables/useProducts'
+import { useProducts } from '@/composables/useProduct'
 import ProductCard from '@/components/front/ProductCard.vue'
 
 const { products, isLoading, error, fetchProducts } = useProducts()
