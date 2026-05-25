@@ -1,6 +1,6 @@
 <template>
   <div class="product-detail-container">
-    <router-link to="/home" class="back-btn">← Retour aux produits</router-link>
+    <router-link to="/front/home" class="back-btn">← Retour aux produits</router-link>
 
     <div v-if="isLoading" class="loading">Chargement...</div>
     <div v-else-if="error" class="error-message">{{ error }}</div>
@@ -27,6 +27,14 @@
           <p class="stock" :class="{ 'out-of-stock': product.quantity <= 0 }">
             {{ product.quantity > 0 ? `En stock (${product.quantity} disponibles)` : 'Rupture de stock' }}
           </p>
+
+          <button 
+            @click="handleAddToCart" 
+            :disabled="isCartLoading || product.quantity <= 0"
+            class="add-to-cart-btn"
+          >
+            {{ isCartLoading ? 'Ajout en cours...' : 'Ajouter au panier' }}
+          </button>
         </div>
 
       </div>
@@ -42,6 +50,7 @@
 <script setup>
 import { onMounted } from 'vue'
 import { useProduct } from '@/composables/useProduct'
+import { useCart } from '@/composables/useCart'
 
 const props = defineProps({
   id: {
@@ -51,10 +60,15 @@ const props = defineProps({
 })
 
 const { product, isLoading, error, fetchProducts } = useProduct()
+const { addProductToCart, isLoading: isCartLoading } = useCart()
 
 const getLocalizedValue = (field) => {
   if (Array.isArray(field)) return field[0]?.value || ''
   return field
+}
+
+const handleAddToCart = () => {
+  addProductToCart(product.value.id, 1)
 }
 
 onMounted(() => {
@@ -140,5 +154,19 @@ onMounted(() => {
   text-align: center;
   font-size: 1.2em;
   padding: 40px;
+}
+.add-to-cart-btn {
+  background: #27ae60;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.1em;
+  cursor: pointer;
+  font-weight: bold;
+}
+.add-to-cart-btn:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
 }
 </style>
