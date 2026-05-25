@@ -1,31 +1,49 @@
 import { ref } from 'vue'
 import { productService } from '@/services/productService'
 
-export function useProducts() 
-{
+export function useProducts() {
   const products = ref([])
   const isLoading = ref(false)
   const error = ref(null)
 
-  const fetchProducts = async () => 
-    {
+  const fetchProducts = async () => {
     isLoading.value = true
     error.value = null
-    try 
-    {
+    try {
       const response = await productService.getProducts()
       // PrestaShop encapsule les données dans un objet "products"
       // Si l'API est vide, il se peut que response.data soit vide ou ne contienne pas le tableau
       products.value = response.data.products || []
-    } catch (err) 
-    {
+    } catch (err) {
       console.error(err)
-      error.value = "Impossible de récupérer les produits PrestaShop."
-    } finally 
-    {
+      error.value = 'Impossible de récupérer les produits PrestaShop.'
+    } finally {
       isLoading.value = false
     }
   }
 
   return { products, isLoading, error, fetchProducts }
+}
+
+export function useProduct() {
+  const product = ref(null)
+  const isLoading = ref(false)
+  const error = ref(null)
+
+  const fetchProductById = async (id) => {
+    isLoading.value = true
+    error.value = null
+    try {
+      const response = await productService.getProductById(id)
+      // PrestaShop renvoie l'objet encapsulé dans "product"
+      product.value = response.data.product || null
+    } catch (err) {
+      console.error(err)
+      error.value = 'Impossible de charger les détails du produit.'
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  return { product, isLoading, error, fetchProductById }
 }
