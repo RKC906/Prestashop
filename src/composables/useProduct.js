@@ -30,6 +30,16 @@ export function useProduct() {
   const isLoading = ref(false)
   const error = ref(null)
 
+  const fetchSingleProductRaw = async (id) => {
+    try {
+      const response = await productService.getProductById(id)
+      return response.data.product
+    } catch (err) {
+      console.error(`Impossible de charger le produit ${id}`, err)
+      return null
+    }
+  }
+
   const fetchProductById = async (id) => {
     isLoading.value = true
     error.value = null
@@ -45,5 +55,5 @@ export function useProduct() {
     }
   }
 
-  return { product, isLoading, error, fetchProductById }
+  return { product, isLoading, error, fetchProductById, fetchSingleProductRaw }
 }
