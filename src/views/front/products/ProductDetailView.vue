@@ -1,29 +1,38 @@
 <template>
   <div class="product-detail-container">
-    <!-- Bouton pour retourner à la liste globale -->
     <router-link to="/home" class="back-btn">← Retour aux produits</router-link>
 
-    <!-- Gestion des états visuels -->
-    <div v-if="isLoading" class="loading">Chargement des détails du produit...</div>
+    <div v-if="isLoading" class="loading">Chargement...</div>
     <div v-else-if="error" class="error-message">{{ error }}</div>
     
-    <!-- Affichage de la fiche produit -->
     <div v-else-if="product" class="product-sheet">
-      <h1 class="product-title">{{ getLocalizedValue(product.name) }}</h1>
-      <p class="reference">Référence : {{ product.reference }}</p>
-      
-      <hr class="separator" />
+      <div class="product-layout">
+        
+        <div class="product-image-section">
+          <img 
+            v-if="product.id_default_image"
+            :src="`/api/images/products/${product.id}/${product.id_default_image}`" 
+            :alt="getLocalizedValue(product.name)"
+            class="main-product-img"
+          />
+          <div v-else class="no-image-placeholder">Aucun visuel disponible</div>
+        </div>
 
-      <div class="product-meta">
-        <p class="price">{{ parseFloat(product.price).toFixed(2) }} €</p>
-        <p class="stock" :class="{ 'out-of-stock': product.quantity <= 0 }">
-          Stock disponible : {{ product.quantity }}
-        </p>
+        <div class="product-info-section">
+          <h1 class="product-title">{{ getLocalizedValue(product.name) }}</h1>
+          <p class="reference">Référence : {{ product.reference }}</p>
+          
+          <p class="price">{{ parseFloat(product.price).toFixed(2) }} €</p>
+          
+          <p class="stock" :class="{ 'out-of-stock': product.quantity <= 0 }">
+            {{ product.quantity > 0 ? `En stock (${product.quantity} disponibles)` : 'Rupture de stock' }}
+          </p>
+        </div>
+
       </div>
 
       <div class="product-description">
-        <h2>Description</h2>
-        <!-- v-html permet d'interpréter le code HTML envoyé par PrestaShop -->
+        <h2>Description du produit</h2>
         <div v-html="getLocalizedValue(product.description)"></div>
       </div>
     </div>
@@ -34,7 +43,6 @@
 import { onMounted } from 'vue'
 import { useProduct } from '@/composables/useProduct'
 
-// L'id provient directement de l'URL grâce au paramètre props: true du routeur
 const props = defineProps({
   id: {
     type: String,
@@ -42,25 +50,21 @@ const props = defineProps({
   }
 })
 
-const { product, isLoading, error, fetchProductById } = useProduct()
+const { product, isLoading, error, fetchProducts } = useProduct()
 
-// Extrait la chaîne de caractères du format multilingue PrestaShop
 const getLocalizedValue = (field) => {
-  if (Array.isArray(field)) {
-    return field[0]?.value || ''
-  }
+  if (Array.isArray(field)) return field[0]?.value || ''
   return field
 }
 
-// Charge le produit ciblé dès que le composant est inséré dans le DOM
 onMounted(() => {
-  fetchProductById(props.id)
+  fetchProducts(props.id)
 })
 </script>
 
 <style scoped>
 .product-detail-container {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 40px auto;
   padding: 0 20px;
 }
@@ -69,10 +73,6 @@ onMounted(() => {
   margin-bottom: 24px;
   color: #3498db;
   text-decoration: none;
-  font-weight: 500;
-}
-.back-btn:hover {
-  text-decoration: underline;
 }
 .product-sheet {
   background: white;
@@ -80,54 +80,65 @@ onMounted(() => {
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
+/* Flexbox pour aligner Image et Infos côte à côte */
+.product-layout {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+@media (max-width: 768px) {
+  .product-layout {
+    flex-direction: column; /* Empilement sur mobile */
+  }
+}
+.product-image-section {
+  flex: 1;
+  background: #fdfdfd;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 350px;
+}
+.main-product-img {
+  max-width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+}
+.product-info-section {
+  flex: 1;
+}
 .product-title {
-  margin-bottom: 8px;
   color: #2c3e50;
+  margin-top: 0;
 }
 .reference {
   color: #7f8c8d;
-  font-size: 0.9em;
-  margin-bottom: 20px;
-}
-.separator {
-  border: 0;
-  border-top: 1px solid #eee;
-  margin: 20px 0;
-}
-.product-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
 }
 .price {
-  font-size: 2.2em;
+  font-size: 2.5em;
   font-weight: bold;
-  color: #2c3e50;
-  margin: 0;
+  color: #e74c3c;
+  margin: 20px 0;
 }
 .stock {
-  color: #27ae60;
   font-weight: bold;
+  color: #27ae60;
 }
 .stock.out-of-stock {
   color: #c0392b;
 }
-.product-description h2 {
-  font-size: 1.4em;
-  color: #2c3e50;
-  margin-bottom: 12px;
+.product-description {
+  border-top: 1px solid #eee;
+  padding-top: 30px;
 }
-.product-description div {
-  line-height: 1.7;
-  color: #34495e;
+.product-description h2 {
+  margin-bottom: 15px;
 }
 .loading, .error-message {
   text-align: center;
-  padding: 40px;
   font-size: 1.2em;
-}
-.error-message {
-  color: #e74c3c;
+  padding: 40px;
 }
 </style>

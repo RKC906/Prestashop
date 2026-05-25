@@ -8,7 +8,7 @@ const routes = [
     path: '/',
     redirect: '/home' // Redirige l'accueil vers les produits par défaut
   },
-
+  
   {
     path: '/home',
     name: 'Home',
