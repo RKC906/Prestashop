@@ -6,7 +6,7 @@
 
     <div v-else-if="enrichedCartItems.length === 0" class="empty-cart">
       <p>Votre panier est vide.</p>
-      <router-link to="/products" class="btn-shop">Découvrir nos produits</router-link>
+      <router-link to="/front/home" class="btn-shop">Découvrir nos produits</router-link>
     </div>
 
     <div v-else class="cart-content">

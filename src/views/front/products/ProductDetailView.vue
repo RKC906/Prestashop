@@ -59,7 +59,7 @@ const props = defineProps({
   }
 })
 
-const { product, isLoading, error, fetchProducts } = useProduct()
+const { product, isLoading, error, fetchProductById } = useProduct()
 const { addProductToCart, isLoading: isCartLoading } = useCart()
 
 const getLocalizedValue = (field) => {
@@ -72,7 +72,7 @@ const handleAddToCart = () => {
 }
 
 onMounted(() => {
-  fetchProducts(props.id)
+  fetchProductById(props.id)
 })
 </script>
 

@@ -16,7 +16,9 @@ export function useProducts() {
       products.value = response.data.products || []
     } catch (err) {
       console.error(err)
-      error.value = 'Impossible de récupérer les produits PrestaShop.'
+      const status = err?.response?.status
+      const reason = status ? ` (statut ${status})` : ''
+      error.value = `Impossible de récupérer les produits PrestaShop${reason}. Vérifiez la configuration du proxy et la clé API.`
     } finally {
       isLoading.value = false
     }

@@ -6,6 +6,15 @@ export default defineConfig(({ mode }) => {
   // Charge les variables du fichier .env
   const env = loadEnv(mode, process.cwd())
 
+  const prestashopApiUrl = env.VITE_PRESTASHOP_API_URL
+  const prestashopApiKey = env.VITE_PRESTASHOP_API_KEY
+
+  if (!prestashopApiUrl || !prestashopApiKey) {
+    throw new Error(
+      'Configuration manquante : définissez VITE_PRESTASHOP_API_URL et VITE_PRESTASHOP_API_KEY dans un fichier .env.'
+    )
+  }
+
   return {
     plugins: [vue()],
                             resolve: {
@@ -17,17 +26,23 @@ export default defineConfig(({ mode }) => {
                               proxy: {
                                 // Dès que Vue appelle '/api/xyz', Vite prend le relais
                                 '/api': {
-                                  target: env.VITE_PRESTASHOP_API_URL,
+                                  target: prestashopApiUrl,
                             changeOrigin: true,
-                            // Supprime le préfixe /api si ton PrestaShop a déjà /api dans son URL de base
-                            rewrite: (path) => path.replace(/^\/api/, ''),
+                            // Conserve le préfixe /api pour accéder à l\'API PrestaShop
                             configure: (proxy) => {
                               proxy.on('proxyReq', (proxyReq) => {
                                 // PrestaShop utilise l'authentification HTTP Basic avec la clé en nom d'utilisateur (et mot de passe vide)
-                                const token = btoa(`${env.VITE_PRESTASHOP_API_KEY}:`)
+                                const token = btoa(`${prestashopApiKey}:`)
                                 proxyReq.setHeader('Authorization', `Basic ${token}`)
                                 // Demande du JSON à PrestaShop (par défaut il renvoie du XML)
                                 proxyReq.setHeader('Output-Format', 'JSON')
+                              })
+                              proxy.on('proxyRes', (proxyRes, req) => {
+                                if (proxyRes.statusCode && proxyRes.statusCode >= 400) {
+                                  console.warn(
+                                    `[proxy][prestashop] ${req.method} ${req.url} -> ${proxyRes.statusCode}`
+                                  )
+                                }
                               })
                             }
                                 }
